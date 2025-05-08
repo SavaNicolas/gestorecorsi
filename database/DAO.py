@@ -5,10 +5,11 @@ from model.studente import Studente
 
 class DAO():
     @staticmethod
+    #🩵se voglio solo il codice
     def getCodins():
         cnx = DBConnect.get_connection()
         res = []
-        if cnx is None:
+        if cnx is None: #questo controllo va fatto sempre
             print("Connessione fallita")
         else:
             cursor = cnx.cursor(dictionary=True)
@@ -19,13 +20,12 @@ class DAO():
             cursor.execute(query)
 
             for row in cursor:
-                res.append(row["codins"])
-            #processa res
+                res.append(row["codins"])#dal dizionario prendo il codice
 
             cursor.close()
             cnx.close()
         return res
-
+    #💙 se volessi tutto il corso e non solo il codice
     @staticmethod
     def getAllCorsi():
         cnx = DBConnect.get_connection()
@@ -45,7 +45,7 @@ class DAO():
                 #                  crediti = row["crediti"],
                 #                  nome = row["nome"],
                 #                  pd = row["pd"]))
-                res.append(Corso(**row))
+                res.append(Corso(**row)) #per riassumere la cosa sopra, solo se database e classe hanno gli stessi attributi con gli stessi nomi
             # processa res
 
             cursor.close()
@@ -53,6 +53,7 @@ class DAO():
             return res
 
     @staticmethod
+    #💜 prendi i corsi di quel periodo didattico
     def getCorsiPD(pd):
         cnx = DBConnect.get_connection()
         res = []
@@ -75,6 +76,7 @@ class DAO():
             cnx.close()
             return res
 
+    # 💚 conta numero iscritti per corso
     @staticmethod
     def getCorsiPDwithIscritti(pd):
         cnx = DBConnect.get_connection()
@@ -89,6 +91,8 @@ class DAO():
                         where c.codins = i.codins 
                         and c.pd = %s
                         group by c.codins, c.crediti, c.nome, c.pd"""
+            #per usare il count ci serve la group by. Dobbiamo contare tutte le righe che hanno il corso uguale
+            #quindi tutti i valori prima del count
 
             cursor.execute(query, (pd,))
 
@@ -97,12 +101,14 @@ class DAO():
                 res.append((Corso(row["codins"],
                                    row["crediti"],
                                    row["nome"],
-                                   row["pd"]), row["n"]))
+                                   row["pd"]), row["n"])) #sto creando una tupla!! guarda le parentesi
+                #row n sarebbe la colonna nel count: abbiamo rinominato count as n
 
             cursor.close()
             cnx.close()
             return res
 
+    # 💛 stampa studenti del corso selezionato
     @staticmethod
     def getStudentiCorso(codins):
         cnx = DBConnect.get_connection()
@@ -131,6 +137,7 @@ class DAO():
             cnx.close()
             return res
 
+    # 🖤 quanti gestionali ci sono? quanti informatici etc...
     @staticmethod
     def getCDSofCorso(codins):
         cnx = DBConnect.get_connection()
@@ -145,13 +152,13 @@ class DAO():
                         WHERE s.matricola = i.matricola 
                         and i.codins = %s
                         and s.CDS != ""
-                        group by s.CDS """
+                        group by s.CDS """ #come vedi abbiamo messo che cds deve essere diverso da null
 
             cursor.execute(query, (codins,))
 
             res = []
             for row in cursor:
-                res.append( (row["CDS"], row["n"]) )
+                res.append( (row["CDS"], row["n"]) ) #di nuovo tupla
 
             cursor.close()
             cnx.close()

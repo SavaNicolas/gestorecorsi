@@ -10,7 +10,6 @@ class Corso:
     # studenti: list[Studente] = None # lazy initialization
     # matricole: list[str] = None
 
-
     def __eq__(self, other):
         return self.codins == other.codins
 
